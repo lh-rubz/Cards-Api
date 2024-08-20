@@ -1294,7 +1294,7 @@ router.delete("/cards/:id", (req, res) => {
 	res.status(204).send();
 });
 app.use("/.netlify/functions/api", router);
-// router.listen(5500, () => {
-// 	console.log("listening on port 5500");
-// });
+app.listen(5500, () => {
+	console.log("listening on port 5500");
+});
 module.exports.handler = serverless(app);
