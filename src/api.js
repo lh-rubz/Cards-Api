@@ -1291,7 +1291,7 @@ router.delete("/cards/:id", (req, res) => {
 	}
 
 	dataStore.splice(index, 1);
-	res.status(204).send();
+	res.status(204).send(dataStore);
 });
 app.use("/.netlify/functions/api", router);
 app.listen(5500, () => {
