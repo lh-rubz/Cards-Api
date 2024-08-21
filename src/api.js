@@ -8,10 +8,10 @@ const router = express.Router();
 
 // Create MySQL connection
 const connection = mysql.createConnection({
-	host: process.env.DB_HOST || "localhost",
-	user: process.env.DB_USER || "root",
-	password: process.env.DB_PASSWORD || "root",
-	database: process.env.DB_DATABASE || "todo_app",
+	host: "localhost",
+	user: "root",
+	password: "root",
+	database: "todo_app",
 });
 
 connection.connect((err) => {
@@ -19,7 +19,7 @@ connection.connect((err) => {
 		console.error("Error connecting to MySQL:", err.stack);
 		return;
 	}
-	console.log("Connected to MySQL");
+	console.log("Connected to MySQL ");
 });
 
 app.use(cors());
@@ -31,7 +31,6 @@ router.get("/cards", async (req, res) => {
 		const [rows] = await connection.promise().query("SELECT * FROM tasks");
 		res.json(rows);
 	} catch (error) {
-		console.error("Error fetching cards:", error.message);
 		res.status(500).json({ error: error.message });
 	}
 });
@@ -48,7 +47,6 @@ router.get("/cards/user/:userId", async (req, res) => {
 			.query("SELECT * FROM tasks WHERE userId = ?", [userId]);
 		res.json(rows);
 	} catch (error) {
-		console.error("Error fetching cards by userId:", error.message);
 		res.status(500).json({ error: error.message });
 	}
 });
@@ -70,11 +68,27 @@ router.get("/cards/:id", async (req, res) => {
 		}
 		res.json(rows[0]);
 	} catch (error) {
-		console.error("Error fetching card by ID:", error.message);
 		res.status(500).json({ error: error.message });
 	}
 });
+// GET cards by title (starts with)
+router.get("/cards/search/:title", async (req, res) => {
+	const { title } = req.params;
 
+	if (typeof title !== "string" || title.trim() === "") {
+		return res.status(400).json({ error: "Invalid or missing title" });
+	}
+
+	try {
+		const [rows] = await connection
+			.promise()
+			.query("SELECT * FROM tasks WHERE title LIKE ?", [`${title}%`]);
+		res.json(rows);
+	} catch (error) {
+		console.error("Database query error:", error.message);
+		res.status(500).json({ error: error.message });
+	}
+});
 // POST a new card
 router.post("/cards/user/:userId", async (req, res) => {
 	const { userId } = req.params;
@@ -103,7 +117,6 @@ router.post("/cards/user/:userId", async (req, res) => {
 
 		res.status(201).json({ id: newId, userId, title, completed });
 	} catch (error) {
-		console.error("Error posting new card:", error.message);
 		res.status(500).json({ error: error.message });
 	}
 });
@@ -134,7 +147,6 @@ router.put("/cards/:id", async (req, res) => {
 		}
 		res.json({ id: taskId, userId, title, completed });
 	} catch (error) {
-		console.error("Error updating card:", error.message);
 		res.status(500).json({ error: error.message });
 	}
 });
@@ -158,31 +170,13 @@ router.delete("/cards/:id", async (req, res) => {
 		const [rows] = await connection.promise().query("SELECT * FROM tasks");
 		res.json(rows);
 	} catch (error) {
-		console.error("Error deleting card:", error.message);
-		res.status(500).json({ error: error.message });
-	}
-});
-
-// GET cards by title (starts with)
-// POST search cards by title (starts with)
-router.post("/cards/search", async (req, res) => {
-	const { title } = req.body;
-
-	if (typeof title !== "string" || title.trim() === "") {
-		return res.status(400).json({ error: "Invalid or missing title" });
-	}
-
-	try {
-		const [rows] = await connection
-			.promise()
-			.query("SELECT * FROM tasks WHERE title LIKE ?", [`${title}%`]);
-		res.json(rows);
-	} catch (error) {
-		console.error("Database query error:", error.message);
 		res.status(500).json({ error: error.message });
 	}
 });
 
 app.use("/.netlify/functions/api", router);
+// app.listen(5500, () => {
+// 	console.log("listening on port 5500");
+// });
 
 module.exports.handler = serverless(app);
