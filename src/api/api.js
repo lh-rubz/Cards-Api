@@ -74,11 +74,10 @@ router.get("/cards/:id", async (req, res) => {
 // GET cards by title (starts with)
 router.get("/cards/search/:title", async (req, res) => {
 	const { title } = req.params;
-
+	console.log("Search title:", title); // Debugging line
 	if (typeof title !== "string" || title.trim() === "") {
 		return res.status(400).json({ error: "Invalid or missing title" });
 	}
-
 	try {
 		const [rows] = await connection
 			.promise()
