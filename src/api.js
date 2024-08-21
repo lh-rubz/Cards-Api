@@ -71,23 +71,7 @@ router.get("/cards/:id", async (req, res) => {
 		res.status(500).json({ error: error.message });
 	}
 });
-// GET cards by title (starts with)
-router.get("/cards/search/:title", async (req, res) => {
-	const { title } = req.params;
-	console.log("Search title:", title); // Debugging line
-	if (typeof title !== "string" || title.trim() === "") {
-		return res.status(400).json({ error: "Invalid or missing title" });
-	}
-	try {
-		const [rows] = await connection
-			.promise()
-			.query("SELECT * FROM tasks WHERE title LIKE ?", [`${title}%`]);
-		res.json(rows);
-	} catch (error) {
-		console.error("Database query error:", error.message);
-		res.status(500).json({ error: error.message });
-	}
-});
+
 // POST a new card
 router.post("/cards/user/:userId", async (req, res) => {
 	const { userId } = req.params;
