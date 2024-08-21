@@ -85,6 +85,7 @@ router.get("/cards/search/:title", async (req, res) => {
 			.query("SELECT * FROM tasks WHERE title LIKE ?", [`${title}%`]);
 		res.json(rows);
 	} catch (error) {
+		console.error("Database query error:", error.message);
 		res.status(500).json({ error: error.message });
 	}
 });
