@@ -164,8 +164,9 @@ router.delete("/cards/:id", async (req, res) => {
 });
 
 // GET cards by title (starts with)
-router.get("/cards/search/:title", async (req, res) => {
-	const { title } = req.params;
+// POST search cards by title (starts with)
+router.post("/cards/search", async (req, res) => {
+	const { title } = req.body;
 
 	if (typeof title !== "string" || title.trim() === "") {
 		return res.status(400).json({ error: "Invalid or missing title" });
