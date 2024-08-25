@@ -6,21 +6,18 @@ const serverless = require("serverless-http");
 const app = express();
 const router = express.Router();
 
-// Create MySQL connection
-const connection = mysql.createConnection({
+// Create MySQL connection pool
+const pool = mysql.createPool({
 	host: "localhost",
 	user: "root",
 	password: "root",
 	database: "todo_app",
+	waitForConnections: true,
+	connectionLimit: 10,
+	queueLimit: 0,
 });
 
-connection.connect((err) => {
-	if (err) {
-		console.error("Error connecting to MySQL:", err.stack);
-		return;
-	}
-	console.log("Connected to MySQL ");
-});
+const promisePool = pool.promise();
 
 app.use(cors());
 app.use(express.json());
@@ -28,7 +25,7 @@ app.use(express.json());
 // GET all cards
 router.get("/cards", async (req, res) => {
 	try {
-		const [rows] = await connection.promise().query("SELECT * FROM tasks");
+		const [rows] = await promisePool.query("SELECT * FROM tasks");
 		res.json(rows);
 	} catch (error) {
 		res.status(500).json({ error: error.message });
@@ -42,9 +39,10 @@ router.get("/cards/user/:userId", async (req, res) => {
 		return res.status(400).json({ error: "Invalid user ID" });
 	}
 	try {
-		const [rows] = await connection
-			.promise()
-			.query("SELECT * FROM tasks WHERE userId = ?", [userId]);
+		const [rows] = await promisePool.query(
+			"SELECT * FROM tasks WHERE userId = ?",
+			[userId]
+		);
 		res.json(rows);
 	} catch (error) {
 		res.status(500).json({ error: error.message });
@@ -54,15 +52,14 @@ router.get("/cards/user/:userId", async (req, res) => {
 // GET a specific card by ID
 router.get("/cards/:id", async (req, res) => {
 	const taskId = parseInt(req.params.id, 10);
-
 	if (isNaN(taskId)) {
 		return res.status(400).json({ error: "Invalid task ID" });
 	}
-
 	try {
-		const [rows] = await connection
-			.promise()
-			.query("SELECT * FROM tasks WHERE id = ?", [taskId]);
+		const [rows] = await promisePool.query(
+			"SELECT * FROM tasks WHERE id = ?",
+			[taskId]
+		);
 		if (rows.length === 0) {
 			return res.status(404).json({ error: "Task not found" });
 		}
@@ -86,9 +83,9 @@ router.post("/cards/user/:userId", async (req, res) => {
 	}
 
 	try {
-		const [maxIdResult] = await connection
-			.promise()
-			.query("SELECT MAX(id) AS maxId FROM tasks");
+		const [maxIdResult] = await promisePool.query(
+			"SELECT MAX(id) AS maxId FROM tasks"
+		);
 		const maxId = maxIdResult[0].maxId;
 		const newId = maxId !== null ? maxId + 1 : 1;
 
@@ -96,7 +93,7 @@ router.post("/cards/user/:userId", async (req, res) => {
 			"INSERT INTO tasks (id, userId, title, completed) VALUES (?, ?, ?, ?)";
 		const values = [newId, userId, title, completed];
 
-		await connection.promise().query(query, values);
+		await promisePool.query(query, values);
 
 		res.status(201).json({ id: newId, userId, title, completed });
 	} catch (error) {
@@ -119,12 +116,10 @@ router.put("/cards/:id", async (req, res) => {
 	}
 
 	try {
-		const [result] = await connection
-			.promise()
-			.query(
-				"UPDATE tasks SET userId = ?, title = ?, completed = ? WHERE id = ?",
-				[userId, title, completed, taskId]
-			);
+		const [result] = await promisePool.query(
+			"UPDATE tasks SET userId = ?, title = ?, completed = ? WHERE id = ?",
+			[userId, title, completed, taskId]
+		);
 		if (result.affectedRows === 0) {
 			return res.status(404).json({ error: "Task not found" });
 		}
@@ -143,14 +138,15 @@ router.delete("/cards/:id", async (req, res) => {
 	}
 
 	try {
-		const [deleteResult] = await connection
-			.promise()
-			.query("DELETE FROM tasks WHERE id = ?", [taskId]);
+		const [deleteResult] = await promisePool.query(
+			"DELETE FROM tasks WHERE id = ?",
+			[taskId]
+		);
 		if (deleteResult.affectedRows === 0) {
 			return res.status(404).json({ error: "Task not found" });
 		}
 
-		const [rows] = await connection.promise().query("SELECT * FROM tasks");
+		const [rows] = await promisePool.query("SELECT * FROM tasks");
 		res.json(rows);
 	} catch (error) {
 		res.status(500).json({ error: error.message });
@@ -158,8 +154,5 @@ router.delete("/cards/:id", async (req, res) => {
 });
 
 app.use("/.netlify/functions/api", router);
-// app.listen(5500, () => {
-// 	console.log("listening on port 5500");
-// });
 
 module.exports.handler = serverless(app);
