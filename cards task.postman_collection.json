@@ -1,0 +1,143 @@
+{
+	"info": {
+		"_postman_id": "4a8592f3-1fb7-4829-9f15-845847c4f01b",
+		"name": "cards task",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37767186"
+	},
+	"item": [
+		{
+			"name": "add card",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\":\"hhh\",\r\n    \"completed\":true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://cardsapi.netlify.app/.netlify/functions/api/cards/user/:userId",
+					"protocol": "https",
+					"host": [
+						"cardsapi",
+						"netlify",
+						"app"
+					],
+					"path": [
+						".netlify",
+						"functions",
+						"api",
+						"cards",
+						"user",
+						":userId"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit card",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"userId\":\"1\",\r\n    \"title\":\"hhh\",\r\n    \"completed\":true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://cardsapi.netlify.app/.netlify/functions/api/cards/:id",
+					"protocol": "https",
+					"host": [
+						"cardsapi",
+						"netlify",
+						"app"
+					],
+					"path": [
+						".netlify",
+						"functions",
+						"api",
+						"cards",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all cards",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "get cards for a specific user",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "get cards by id",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "delete card",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://cardsapi.netlify.app/.netlify/functions/api/cards/:id",
+					"protocol": "https",
+					"host": [
+						"cardsapi",
+						"netlify",
+						"app"
+					],
+					"path": [
+						".netlify",
+						"functions",
+						"api",
+						"cards",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
