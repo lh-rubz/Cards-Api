@@ -152,7 +152,21 @@ router.delete("/cards/:id", async (req, res) => {
 		res.status(500).json({ error: error.message });
 	}
 });
+function handleShutdown(signal) {
+	console.log(`Received ${signal}. Closing MySQL pool...`);
+	pool.end((err) => {
+		if (err) {
+			console.error("Error closing MySQL pool:", err);
+		} else {
+			console.log("MySQL pool closed.");
+		}
+		process.exit();
+	});
+}
 
+// Listen for termination signals
+process.on("SIGINT", () => handleShutdown("SIGINT"));
+process.on("SIGTERM", () => handleShutdown("SIGTERM"));
 app.use("/.netlify/functions/api", router);
 
 module.exports.handler = serverless(app);
