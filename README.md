@@ -21,7 +21,7 @@ Content-Type: application/json
   "title": "New Card",
   "completed": false
 }
--**Response**
+- **Response**
 {"userId": 123,
   "id": cardId,
   "title": "New Card",
