@@ -13,7 +13,7 @@ json
     "title": "Card Title",
     "completed": false
   }
--**Example Request:**
+- **Example Request:**
   POST https://cardsapi.netlify.app/.netlify/functions/api/cards/user/123
 Content-Type: application/json
 
@@ -39,7 +39,7 @@ json
   "completed": true,
   "userId": "userId"
 }
--**Example Request:**
+- **Example Request:**
  PUT https://cardsapi.netlify.app/.netlify/functions/api/cards/124
 Content-Type: application/json
 
@@ -48,7 +48,7 @@ Content-Type: application/json
   "completed": true,
   "userId": 123
 }
--**Response**
+- **Response**
 {
   "id": 124,
   "title": "Updated Title",
@@ -64,7 +64,7 @@ Content-Type: application/json
 -**Example Request:**
  GET https://cardsapi.netlify.app/.netlify/functions/api/cards
 
--**Response**
+- **Response**
 [
   {
     "id": 1,
@@ -84,7 +84,7 @@ Content-Type: application/json
 - **Endpoint:** `GET /cards/user/:userId`
 - **Description:** Retrieves all cards associated with a specific user.
 - **URL:** `https://cardsapi.netlify.app/.netlify/functions/api/cards/user/:userId`
--**Example Request:**
+- **Example Request:**
 GET https://cardsapi.netlify.app/.netlify/functions/api/cards/user/123
 
 -**Response**
@@ -106,11 +106,11 @@ GET https://cardsapi.netlify.app/.netlify/functions/api/cards/user/123
 - **Endpoint:** `GET /cards/:id`
 - **Description:** Retrieves a specific card by its ID.
 - **URL:** `https://cardsapi.netlify.app/.netlify/functions/api/cards/:id`
--**Example Request:**
+- **Example Request:**
 GET https://cardsapi.netlify.app/.netlify/functions/api/cards/124
 
 
--**Response**
+- **Response**
 {
   "id": 124,
   "title": "Card Title",
@@ -122,12 +122,12 @@ GET https://cardsapi.netlify.app/.netlify/functions/api/cards/124
 - **Endpoint:** `DELETE /cards/:id`
 - **Description:** Deletes a specific card by its ID.
 - **URL:** `https://cardsapi.netlify.app/.netlify/functions/api/cards/:id`
--**Example Request:**
+- **Example Request:**
 DELETE https://cardsapi.netlify.app/.netlify/functions/api/cards/123
 
 
 
--**Response**
+- **Response**
 returns the rest of the cards without the deleted one.
 [{
   "id": 124,
